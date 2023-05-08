@@ -1,0 +1,80 @@
+import requests
+import json
+
+headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'TBA-TeamComparer'
+}
+
+params = {
+    'event': '2023casj',
+    'X-TBA-Auth-Key': 'eooPGIqhuJkYZQgKUaFKDqjNBTNxFLmdkTO40y6MgpLjSRs2MKin9FNHRy5Obg6l'
+}
+
+matches_url = 'https://www.thebluealliance.com/api/v3/event/2023casj/matches'
+
+response = requests.get(matches_url, headers=headers, params=params)
+
+matches_data = json.loads(response.content.decode('utf-8'))
+
+# print(matches_data)
+
+team = "frc254"
+comparedNum = "1678"
+compared = "frc" + comparedNum
+
+team_254_matches = [match for match in matches_data if
+                    team in match["alliances"]["blue"]["team_keys"] or team in match["alliances"]["red"]["team_keys"]]
+compared_matches = [match for match in matches_data if
+                    compared in match["alliances"]["blue"]["team_keys"] or compared in match["alliances"]["red"][
+                        "team_keys"]]
+
+matches_together = [match for match in team_254_matches if
+                    compared in match["alliances"]["blue"]["team_keys"] or compared in match["alliances"]["red"][
+                        "team_keys"]]
+
+
+def staple(match):
+    if [match for match in matches_data if team in match["alliances"]["blue"]["team_keys"]]:
+        if [match for match in matches_data if compared in match["alliances"]["blue"]["team_keys"]]:
+            return "partner"
+        elif [match for match in matches_data if team in match["alliances"]["red"]["team_keys"]]:
+            return "opponent"
+    elif [match for match in matches_data if team in match["alliances"]["red"]["team_keys"]]:
+        if [match for match in matches_data if compared in match["alliances"]["blue"]["team_keys"]]:
+            return "opponent"
+        elif [match for match in matches_data if compared in match["alliances"]["red"]["team_keys"]]:
+            return "partner"
+
+
+# print(team_1678_matches)
+
+# print(len(matches_together))
+wap = []
+i = len(matches_together)
+print("Matches for 254 && " + comparedNum)
+i = 0
+for match in matches_together:
+
+    def ezMatch(matchStr):
+        if (matchStr == "f"):
+            return "finals"
+        elif (matchStr == "sf"):
+            return "semifinals"
+        elif (matchStr == "qf"):
+            return "quarterfinals"
+        elif (matchStr == "qm"):
+            return "qualifications"
+        else:
+            return "{match type not found}"
+
+
+
+    wap[i] = f"Match {match['match_number']}: {staple(match)} {ezMatch(match['comp_level'])} match between {match['alliances']['blue']['team_keys']} and {match['alliances']['red']['team_keys']}"
+    i = i+1
+    # print(f"Match {match['match_number']}: {staple(match)} {ezMatch(match['comp_level'])} match between {match['alliances']['blue']['team_keys']} and {match['alliances']['red']['team_keys']}")
+    print(wap[i])
+a = wap.length
+while a >= 0:
+    print(wap[a])
+    a -= 1
