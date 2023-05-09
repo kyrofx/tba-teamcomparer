@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Team Finder</title>
+</head>
+<body>
+    <form id="teamFinderForm">
+        <label for="eventInput">Event:</label>
+        <input type="text" id="eventInput" name="eventInput"><br>
+
+        <label for="circusInput">Team Number:</label>
+        <input type="text" id="circusInput" name="circusInput"><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        const form = document.querySelector('#teamFinderForm');
+        const resultsDiv = document.querySelector('#results');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            fetch('/teamfinder', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const matches = data['matches'];
+                let html = '';
+                matches.forEach(match => {
+                    html += `<p>${match}</p>`;
+                });
+                resultsDiv.innerHTML = html;
+            })
+            .catch(error => {
+                console.error(error);
+                resultsDiv.innerHTML = '<p>An error occurred while fetching the data.</p>';
+            });
+        });
+    </script>
+</body>
+</html>
